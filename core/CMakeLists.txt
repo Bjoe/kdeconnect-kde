@@ -9,8 +9,10 @@ include_directories(
 add_subdirectory(backends/lan)
 add_subdirectory(backends/loopback)
 
-# FIXME should be 5.9
-find_package(KF5Notifications 5.8 REQUIRED)
+if(NOT WITHOUT_KDE)
+   # FIXME should be 5.9
+   find_package(KF5Notifications 5.8 REQUIRED)
+endif()
 
 set(kdeconnectcore_SRCS
     ${backends_kdeconnect_SRCS}
@@ -36,6 +38,7 @@ PUBLIC
     Qt5::Network
     KF5::KIOCore
     qca-qt5
+    qca  # <---- Test only
 PRIVATE
     Qt5::DBus
     Qt5::Gui
@@ -51,20 +54,22 @@ set_target_properties(kdeconnectcore PROPERTIES
 target_include_directories(kdeconnectcore PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 generate_export_header(kdeconnectcore EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/kdeconnectcore_export.h BASE_NAME KDEConnectCore)
 
-include(DbusInterfaceMacros)
+if(NOT WITHOUT_KDE)
+    include(DbusInterfaceMacros)
 
-generate_and_install_dbus_interface(
-    kdeconnectcore
-    ../core/daemon.h
-    org.kde.kdeconnect.daemon.xml
-    OPTIONS -a
-)
+    generate_and_install_dbus_interface(
+        kdeconnectcore
+        ../core/daemon.h
+        org.kde.kdeconnect.daemon.xml
+        OPTIONS -a
+    )
 
-generate_and_install_dbus_interface(
-    kdeconnectcore
-    ../core/device.h
-    org.kde.kdeconnect.device.xml
-    OPTIONS -a
-)
+    generate_and_install_dbus_interface(
+        kdeconnectcore
+        ../core/device.h
+        org.kde.kdeconnect.device.xml
+        OPTIONS -a
+    )
 
-install(TARGETS kdeconnectcore EXPORT kdeconnectLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS} LIBRARY NAMELINK_SKIP)
+    install(TARGETS kdeconnectcore EXPORT kdeconnectLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS} LIBRARY NAMELINK_SKIP)
+endif()
