@@ -9,61 +9,96 @@ include_directories(
 add_subdirectory(backends/lan)
 add_subdirectory(backends/loopback)
 
-find_package(KF5Notifications 5.9 REQUIRED)
+if(KDECONNECT_CORE_ONLY)
+    set(kdeconnectcore_SRCS
+        ${backends_kdeconnect_SRCS}
 
-set(kdeconnectcore_SRCS
-    ${backends_kdeconnect_SRCS}
+        backends/linkprovider.cpp
+        backends/devicelink.cpp
 
-    backends/linkprovider.cpp
-    backends/devicelink.cpp
+        kdeconnectplugin.cpp
+        kdeconnectpluginconfig.cpp
+        pluginloader.cpp
 
-    kdeconnectplugin.cpp
-    kdeconnectpluginconfig.cpp
-    pluginloader.cpp
+        kdeconnectconfig.cpp
+        dbushelper.cpp
+        networkpackage.cpp
+        filetransferjob.cpp
+        daemon.cpp
+        device.cpp
+    )
 
-    kdeconnectconfig.cpp
-    dbushelper.cpp
-    networkpackage.cpp
-    filetransferjob.cpp
-    daemon.cpp
-    device.cpp
-)
+    add_library(kdeconnectcore ${kdeconnectcore_SRCS})
+    target_link_libraries(kdeconnectcore
+    PUBLIC
+        Qt5::Network
+        qca-Qt5
+    )
 
-add_library(kdeconnectcore ${kdeconnectcore_SRCS})
-target_link_libraries(kdeconnectcore
-PUBLIC
-    Qt5::Network
-    KF5::CoreAddons
-    qca-qt5
-PRIVATE
-    Qt5::DBus
-    Qt5::Gui
-    KF5::I18n
-    KF5::ConfigCore
-)
+    set_target_properties(kdeconnectcore PROPERTIES
+        VERSION ${KDECONNECT_VERSION}
+        SOVERSION ${KDECONNECT_VERSION_MAJOR}
+    )
+    target_include_directories(kdeconnectcore PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+    generate_export_header(kdeconnectcore EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/kdeconnectcore_export.h BASE_NAME KDEConnectCore)
 
-set_target_properties(kdeconnectcore PROPERTIES
-    VERSION ${KDECONNECT_VERSION}
-    SOVERSION ${KDECONNECT_VERSION_MAJOR}
-)
+else()
+    find_package(KF5Notifications 5.9 REQUIRED)
 
-target_include_directories(kdeconnectcore PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-generate_export_header(kdeconnectcore EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/kdeconnectcore_export.h BASE_NAME KDEConnectCore)
+    set(kdeconnectcore_SRCS
+        ${backends_kdeconnect_SRCS}
 
-include(DbusInterfaceMacros)
+        backends/linkprovider.cpp
+        backends/devicelink.cpp
 
-generate_and_install_dbus_interface(
-    kdeconnectcore
-    ../core/daemon.h
-    org.kde.kdeconnect.daemon.xml
-    OPTIONS -a
-)
+        kdeconnectplugin.cpp
+        kdeconnectpluginconfig.cpp
+        pluginloader.cpp
 
-generate_and_install_dbus_interface(
-    kdeconnectcore
-    ../core/device.h
-    org.kde.kdeconnect.device.xml
-    OPTIONS -a
-)
+        kdeconnectconfig.cpp
+        dbushelper.cpp
+        networkpackage.cpp
+        filetransferjob.cpp
+        daemon.cpp
+        device.cpp
+    )
 
-install(TARGETS kdeconnectcore EXPORT kdeconnectLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS} LIBRARY NAMELINK_SKIP)
+    add_library(kdeconnectcore ${kdeconnectcore_SRCS})
+    target_link_libraries(kdeconnectcore
+    PUBLIC
+        Qt5::Network
+        KF5::CoreAddons
+        qca-qt5
+    PRIVATE
+        Qt5::DBus
+        Qt5::Gui
+        KF5::I18n
+        KF5::ConfigCore
+    )
+
+    set_target_properties(kdeconnectcore PROPERTIES
+        VERSION ${KDECONNECT_VERSION}
+        SOVERSION ${KDECONNECT_VERSION_MAJOR}
+    )
+
+    target_include_directories(kdeconnectcore PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+    generate_export_header(kdeconnectcore EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/kdeconnectcore_export.h BASE_NAME KDEConnectCore)
+
+    include(DbusInterfaceMacros)
+
+    generate_and_install_dbus_interface(
+        kdeconnectcore
+        ../core/daemon.h
+        org.kde.kdeconnect.daemon.xml
+        OPTIONS -a
+    )
+
+    generate_and_install_dbus_interface(
+        kdeconnectcore
+        ../core/device.h
+        org.kde.kdeconnect.device.xml
+        OPTIONS -a
+    )
+
+    install(TARGETS kdeconnectcore EXPORT kdeconnectLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS} LIBRARY NAMELINK_SKIP)
+endif()
