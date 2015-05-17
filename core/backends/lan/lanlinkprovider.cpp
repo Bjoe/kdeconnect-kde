@@ -146,7 +146,7 @@ void LanLinkProvider::connectError()
     //to create a LanDeviceLink from it, deleting everything.
     delete receivedIdentityPackages[socket].np;
     receivedIdentityPackages.remove(socket);
-    delete socket;
+    socket->deleteLater();
 }
 
 void LanLinkProvider::connected()
