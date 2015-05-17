@@ -21,11 +21,6 @@
 #include "lanlinkprovider.h"
 #include "core_debug.h"
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <netdb.h>
-
 #include <QHostInfo>
 #include <QTcpServer>
 #include <QUdpSocket>
@@ -146,7 +141,7 @@ void LanLinkProvider::connectError()
     //to create a LanDeviceLink from it, deleting everything.
     delete receivedIdentityPackages[socket].np;
     receivedIdentityPackages.remove(socket);
-    delete socket;
+    socket->deleteLater();
 }
 
 void LanLinkProvider::connected()

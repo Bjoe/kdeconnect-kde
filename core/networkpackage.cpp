@@ -31,8 +31,7 @@
 #include <QDebug>
 
 #include "dbushelper.h"
-#include "filetransferjob.h"
-#include "pluginloader.h"
+//#include "pluginloader.h"
 #include "kdeconnectconfig.h"
 
 const QCA::EncryptionAlgorithm NetworkPackage::EncryptionAlgorithm = QCA::EME_PKCS1v15;
@@ -59,8 +58,8 @@ void NetworkPackage::createIdentityPackage(NetworkPackage* np)
     np->set("deviceName", config->name());
     np->set("deviceType", config->deviceType());
     np->set("protocolVersion",  NetworkPackage::ProtocolVersion);
-    np->set("SupportedIncomingInterfaces", PluginLoader::instance()->incomingInterfaces().join(","));
-    np->set("SupportedOutgoingInterfaces", PluginLoader::instance()->outgoingInterfaces().join(","));
+    // TODO PluginLoader np->set("SupportedIncomingInterfaces", PluginLoader::instance()->incomingInterfaces().join(","));
+    // TODO PluginLoader np->set("SupportedOutgoingInterfaces", PluginLoader::instance()->outgoingInterfaces().join(","));
 
     //qCDebug(KDECONNECT_CORE) << "createIdentityPackage" << np->serialize();
 }
@@ -213,9 +212,9 @@ bool NetworkPackage::decrypt(QCA::PrivateKey& key, NetworkPackage* out) const
     return true;
 
 }
-
+/*
 FileTransferJob* NetworkPackage::createPayloadTransferJob(const QUrl &destination) const
 {
     return new FileTransferJob(payload(), payloadSize(), destination);
 }
-
+*/

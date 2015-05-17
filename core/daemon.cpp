@@ -20,7 +20,7 @@
 
 #include "daemon.h"
 
-#include <QDBusConnection>
+//#include <QDBusConnection>
 #include <QNetworkSession>
 #include <QNetworkConfigurationManager>
 #include <QNetworkAccessManager>
@@ -94,8 +94,8 @@ Daemon::Daemon(QObject *parent)
     });
 
     //Register on DBus
-    QDBusConnection::sessionBus().registerService("org.kde.kdeconnect");
-    QDBusConnection::sessionBus().registerObject("/modules/kdeconnect", this, QDBusConnection::ExportScriptableContents);
+    // TODO QDBusConnection QDBusConnection::sessionBus().registerService("org.kde.kdeconnect");
+    // TODO QDBusConnection QDBusConnection::sessionBus().registerObject("/modules/kdeconnect", this, QDBusConnection::ExportScriptableContents);
 
     qCDebug(KDECONNECT_CORE) << "KdeConnect daemon started";
 }

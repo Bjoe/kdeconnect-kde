@@ -24,20 +24,20 @@
 #undef interface
 #endif
 
-#include <QDBusConnection>
+//#include <QDBusConnection>
 #include <QFile>
 #include <QStandardPaths>
 
-#include <KSharedConfig>
-#include <KConfigGroup>
-#include <KLocalizedString>
-#include <QIcon>
+//#include <KSharedConfig>
+//#include <KConfigGroup>
+//#include <KLocalizedString>
+//#include <QIcon>
 #include <QDir>
 #include <QJsonArray>
 
 #include "core_debug.h"
 #include "kdeconnectplugin.h"
-#include "pluginloader.h"
+//#include "pluginloader.h"
 #include "backends/devicelink.h"
 #include "backends/linkprovider.h"
 #include "networkpackage.h"
@@ -64,7 +64,7 @@ Device::Device(QObject* parent, const QString& id)
             this, SLOT(pairingTimeout()));
 
     //Register in bus
-    QDBusConnection::sessionBus().registerObject(dbusPath(), this, QDBusConnection::ExportScriptableContents | QDBusConnection::ExportAdaptors);
+    // TODO QDBusConnection QDBusConnection::sessionBus().registerObject(dbusPath(), this, QDBusConnection::ExportScriptableContents | QDBusConnection::ExportAdaptors);
 }
 
 Device::Device(QObject* parent, const NetworkPackage& identityPackage, DeviceLink* dl)
@@ -80,7 +80,7 @@ Device::Device(QObject* parent, const NetworkPackage& identityPackage, DeviceLin
     addLink(identityPackage, dl);
     
     //Register in bus
-    QDBusConnection::sessionBus().registerObject(dbusPath(), this, QDBusConnection::ExportScriptableContents | QDBusConnection::ExportAdaptors);
+    // TODO QDBusConnection QDBusConnection::sessionBus().registerObject(dbusPath(), this, QDBusConnection::ExportScriptableContents | QDBusConnection::ExportAdaptors);
 }
 
 Device::~Device()
@@ -105,7 +105,7 @@ void Device::reloadPlugins()
     QMultiMap<QString, KdeConnectPlugin*> newPluginsByOutgoingInterface;
 
     if (isPaired() && isReachable()) { //Do not load any plugin for unpaired devices, nor useless loading them for unreachable devices
-
+/* TODO  KSharedConfig KConfigGroup PluginLoader
         KConfigGroup pluginStates = KSharedConfig::openConfig(pluginsConfigFile())->group("Plugins");
 
         PluginLoader* loader = PluginLoader::instance();
@@ -153,7 +153,7 @@ void Device::reloadPlugins()
                 }
                 newPluginMap[pluginName] = plugin;
             }
-        }
+        }*/
     }
 
     //Erase all left plugins in the original map (meaning that we don't want
@@ -180,14 +180,14 @@ void Device::requestPair()
 {
     switch(m_pairStatus) {
         case Device::Paired:
-            Q_EMIT pairingFailed(i18n("Already paired"));
+            Q_EMIT pairingFailed("Already paired"); // TODO KLocalizedString i18n("Already paired"));
             return;
         case Device::Requested:
-            Q_EMIT pairingFailed(i18n("Pairing already requested for this device"));
+            Q_EMIT pairingFailed("Pairing already requested for this device"); // TODO KLocalizedString i18n("Pairing already requested for this device"));
             return;
         default:
             if (!isReachable()) {
-                Q_EMIT pairingFailed(i18n("Device not reachable"));
+                Q_EMIT pairingFailed("Device not reachable"); // TODO KLocalizedString i18n("Device not reachable"));
                 return;
             }
             break;
@@ -200,7 +200,7 @@ void Device::requestPair()
 
     if (!success) {
         m_pairStatus = Device::NotPaired;
-        Q_EMIT pairingFailed(i18n("Error contacting device"));
+        Q_EMIT pairingFailed("Error contacting device"); // TODO KLocalizedString i18n("Error contacting device"));
         return;
     }
 
@@ -235,7 +235,7 @@ void Device::pairingTimeout()
     np.set("pair", false);
     sendPackage(np);
     m_pairStatus = Device::NotPaired;
-    Q_EMIT pairingFailed(i18n("Timed out"));
+    Q_EMIT pairingFailed("Timed out"); // TODO KLocalizedString i18n("Timed out"));
 }
 
 static bool lessThan(DeviceLink* p1, DeviceLink* p2)
@@ -326,7 +326,7 @@ void Device::privateReceivedPackage(const NetworkPackage& np)
             if (m_pairStatus == Device::Requested) {
                 m_pairStatus = Device::NotPaired;
                 m_pairingTimeut.stop();
-                Q_EMIT pairingFailed(i18n("Canceled by other peer"));
+                Q_EMIT pairingFailed("Canceled by other peer"); // TODO KLocalizedString i18n("Canceled by other peer"));
             }
             return;
         }
@@ -342,7 +342,7 @@ void Device::privateReceivedPackage(const NetworkPackage& np)
                     m_pairStatus = Device::NotPaired;
                     m_pairingTimeut.stop();
                 }
-                Q_EMIT pairingFailed(i18n("Received incorrect key"));
+                Q_EMIT pairingFailed("Received incorrect key"); // TODO KLocalizedString i18n("Received incorrect key"));
                 return;
             }
 
@@ -368,7 +368,7 @@ void Device::privateReceivedPackage(const NetworkPackage& np)
 
             if (prevPairStatus == Device::Requested) {
                 m_pairingTimeut.stop();
-                Q_EMIT pairingFailed(i18n("Canceled by other peer"));
+                Q_EMIT pairingFailed("Canceled by other peer"); // TODO KLocalizedString i18n("Canceled by other peer"));
             } else if (prevPairStatus == Device::Paired) {
                 unpairInternal();
             }
@@ -407,7 +407,7 @@ void Device::rejectPairing()
     np.set("pair", false);
     sendPackage(np);
 
-    Q_EMIT pairingFailed(i18n("Canceled by the user"));
+    Q_EMIT pairingFailed("Canceled by the user"); // TODO KLocalizedString i18n("Canceled by the user"));
 
 }
 

@@ -20,7 +20,7 @@
 
 #include "kdeconnectconfig.h"
 
-#include <KLocalizedString>
+//#include <KLocalizedString>
 
 #include <QtCrypto>
 #include <QFile>
@@ -61,11 +61,11 @@ KdeConnectConfig::KdeConnectConfig()
 {
     //qCDebug(KDECONNECT_CORE) << "QCA supported capabilities:" << QCA::supportedFeatures().join(",");
     if(!QCA::isSupported("rsa")) {
-        Daemon::instance()->reportError(
+/* TODO KLocalizedString       Daemon::instance()->reportError(
                              i18n("KDE Connect failed to start"),
                              i18n("Could not find support for RSA in your QCA installation. If your "
                                   "distribution provides separate packages for QCA-ossl and QCA-gnupg, "
-                                  "make sure you have them installed and try again."));
+                                  "make sure you have them installed and try again.")); */
         return;
     }
 
@@ -99,7 +99,7 @@ KdeConnectConfig::KdeConnectConfig()
         d->privateKey = QCA::KeyGenerator().createRSA(2048);
 
         if (!privKey.open(QIODevice::ReadWrite | QIODevice::Truncate))  {
-            Daemon::instance()->reportError(QLatin1String("KDE Connect"), i18n("Could not store private key file: %1", keyPath));
+            // TODO KLocalizedString Daemon::instance()->reportError(QLatin1String("KDE Connect"), i18n("Could not store private key file: %1", keyPath));
         } else {
             privKey.setPermissions(strict);
             privKey.write(d->privateKey.toPEM().toLatin1());

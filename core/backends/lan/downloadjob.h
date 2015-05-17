@@ -21,8 +21,7 @@
 #ifndef DOWNLOADJOB_H
 #define DOWNLOADJOB_H
 
-#include <KJob>
-
+#include <QObject>
 #include <QIODevice>
 #include <QVariantMap>
 #include <QHostAddress>
@@ -30,15 +29,16 @@
 #include <QSharedPointer>
 
 class DownloadJob
-    : public KJob
+    : public QObject
 {
     Q_OBJECT
 public:
-    DownloadJob(QHostAddress address, QVariantMap transferInfo);
-    virtual void start();
+    static DownloadJob* createInstance(QHostAddress address, QVariantMap transferInfo, QObject *parent);
+    void start();
     QSharedPointer<QIODevice> getPayload();
 
 private:
+    DownloadJob(QHostAddress address, qint16 port, QObject *parent);
     QHostAddress mAddress;
     qint16 mPort;
     QSharedPointer<QTcpSocket> mSocket;

@@ -18,14 +18,14 @@ if(KDECONNECT_CORE_ONLY)
 
         kdeconnectplugin.cpp
         kdeconnectpluginconfig.cpp
-        pluginloader.cpp
+        #pluginloader.cpp -> KPluginMetaData
 
-        kdeconnectconfig.cpp
+        kdeconnectconfig.cpp # -> KLocalizedString
         dbushelper.cpp
-        networkpackage.cpp
-        filetransferjob.cpp
-        daemon.cpp
-        device.cpp
+        networkpackage.cpp # -> PluginLoader & FileTransferJob
+        #filetransferjob.cpp -> KJob
+        daemon.cpp # -> QDBusConnection
+        device.cpp # -> QDBubConnection KSharedConfig KConfigGroup KLocalizedString PluginLoader
     )
 
     add_library(kdeconnectcore ${kdeconnectcore_SRCS})

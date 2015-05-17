@@ -21,11 +21,6 @@
 #include "landevicelink.h"
 #include "core_debug.h"
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <netdb.h>
-
 #include "../linkprovider.h"
 #include "uploadjob.h"
 #include "downloadjob.h"
@@ -52,7 +47,7 @@ LanDeviceLink::LanDeviceLink(const QString& deviceId, LinkProvider* parent, QTcp
 bool LanDeviceLink::sendPackageEncrypted(QCA::PublicKey& key, NetworkPackage& np)
 {
     if (np.hasPayload()) {
-         UploadJob* job = new UploadJob(np.payload());
+         UploadJob* job = UploadJob::createInstance(np.payload(), this);
          job->start();
          np.setPayloadTransferInfo(job->getTransferInfo());
     }
@@ -70,7 +65,7 @@ bool LanDeviceLink::sendPackageEncrypted(QCA::PublicKey& key, NetworkPackage& np
 bool LanDeviceLink::sendPackage(NetworkPackage& np)
 {
     if (np.hasPayload()) {
-         UploadJob* job = new UploadJob(np.payload());
+         UploadJob* job = UploadJob::createInstance(np.payload(), this);
          job->start();
          np.setPayloadTransferInfo(job->getTransferInfo());
     }
@@ -97,7 +92,7 @@ void LanDeviceLink::dataReceived()
 
         if (decrypted.hasPayloadTransferInfo()) {
             qCDebug(KDECONNECT_CORE) << "HasPayloadTransferInfo";
-            DownloadJob* job = new DownloadJob(mSocketLineReader->peerAddress(), decrypted.payloadTransferInfo());
+            DownloadJob* job = DownloadJob::createInstance(mSocketLineReader->peerAddress(), decrypted.payloadTransferInfo(), this);
             job->start();
             decrypted.setPayload(job->getPayload(), decrypted.payloadSize());
         }

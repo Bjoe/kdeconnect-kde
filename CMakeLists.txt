@@ -8,6 +8,7 @@ set(KDECONNECT_VERSION "${KDECONNECT_VERSION_MAJOR}.${KDECONNECT_VERSION_MINOR}.
 cmake_minimum_required(VERSION 2.8.12)
 
 if(KDECONNECT_CORE_ONLY)
+    add_definitions(-std=c++11)
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
     set(CMAKE_AUTOMOC ON)
     

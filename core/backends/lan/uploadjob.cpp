@@ -24,15 +24,15 @@
 #include "uploadjob.h"
 #include "core_debug.h"
 
-UploadJob::UploadJob(const QSharedPointer<QIODevice>& source): KJob()
+UploadJob::UploadJob(const QSharedPointer<QIODevice>& source, QObject *parent)
+    : QObject(parent)
+    , mInput(source)
+    , mServer(new QTcpServer(this))
+    , mSocket(0)
+    , mPort(0)
 {
-    mInput = source;
-    mServer = new QTcpServer(this);
-    mSocket = 0;
-    mPort = 0;
-
-    connect(mInput.data(), SIGNAL(readyRead()), this, SLOT(readyRead()));
-    connect(mInput.data(), SIGNAL(aboutToClose()), this, SLOT(aboutToClose()));
+    connect(mInput.data(), &QIODevice::readyRead, this, &UploadJob::readyRead);
+    connect(mInput.data(), &QIODevice::aboutToClose, this, &UploadJob::aboutToClose);
 }
 
 void UploadJob::start()
@@ -46,7 +46,7 @@ void UploadJob::start()
             return;
         }
     }
-    connect(mServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
+    connect(mServer, &QTcpServer::newConnection, this, &UploadJob::newConnection);
 }
 
 void UploadJob::newConnection()
@@ -88,7 +88,7 @@ void UploadJob::aboutToClose()
 {
     mSocket->disconnectFromHost();
     mSocket->close();
-    emitResult();
+    deleteLater();
 }
 
 QVariantMap UploadJob::getTransferInfo()

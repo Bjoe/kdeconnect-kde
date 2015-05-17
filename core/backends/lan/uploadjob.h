@@ -21,8 +21,7 @@
 #ifndef UPLOADJOB_H
 #define UPLOADJOB_H
 
-#include <KJob>
-
+#include <QObject>
 #include <QIODevice>
 #include <QVariantMap>
 #include <QTcpServer>
@@ -30,15 +29,16 @@
 #include <QSharedPointer>
 
 class UploadJob
-    : public KJob
+    : public QObject
 {
     Q_OBJECT
 public:
-    UploadJob(const QSharedPointer<QIODevice>& source);
+    static UploadJob* createInstance(const QSharedPointer<QIODevice>& source, QObject* parent);
     virtual void start();
     QVariantMap getTransferInfo();
 
 private:
+    UploadJob(const QSharedPointer<QIODevice>& source, QObject* parent);
     QSharedPointer<QIODevice> mInput;
     QTcpServer* mServer;
     QTcpSocket* mSocket;
